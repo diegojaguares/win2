@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Instalador YouTube Auto</string>
+    <string name="install_btn">Instalar YouTube Auto en Android Auto</string>
+    <string name="status_ready">Listo para instalar.</string>
+    <string name="status_copying">Copiando APK...</string>
+    <string name="status_launching">Abriendo instalador del sistema...</string>
+    <string name="status_error">Error: no se pudo preparar el APK.</string>
+    <style name="Theme.Installer" parent="Theme.AppCompat.Light.DarkActionBar" />
+</resources>
