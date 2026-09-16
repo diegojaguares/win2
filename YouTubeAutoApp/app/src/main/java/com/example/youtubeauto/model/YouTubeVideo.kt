@@ -1,4 +1,4 @@
-﻿package com.example.youtubeauto.model
+package com.example.youtubeauto.model
 
 /**
  * Modelo de datos para un video de YouTube

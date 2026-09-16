@@ -1,23 +1,24 @@
-﻿package com.example.youtubeauto.player
+package com.example.youtubeauto.player
 
+import android.annotation.SuppressLint
 import android.util.Log
 import android.view.View
 import android.view.ViewGroup
+import android.webkit.WebChromeClient
+import android.webkit.WebView
+import android.webkit.WebViewClient
 import androidx.lifecycle.LifecycleOwner
-import com.pierfrancescosironi.youtubeplayer.YouTubePlayer
-import com.pierfrancescosironi.youtubeplayer.YouTubePlayerView
-import com.pierfrancescosironi.youtubeplayer.listener.AbstractYouTubeListener
 
 /**
- * Renderizador de superficie para video de YouTube
- * Inspirado en Fermata Auto
+ * Reproductor YouTube basado en WebView (iframe embed).
+ * Sin dependencias externas: funciona solo con el SDK.
+ * Misma API publica que antes para no tocar VideoProjectionActivity.
  */
 class SurfaceRenderer(
     private val parentView: ViewGroup,
     private val lifecycleOwner: LifecycleOwner
 ) {
-    private var youTubePlayerView: YouTubePlayerView? = null
-    private var youTubePlayer: YouTubePlayer? = null
+    private var webView: WebView? = null
     private var isInitialized = false
     private var pendingVideoId: String? = null
 
@@ -25,6 +26,7 @@ class SurfaceRenderer(
         private const val TAG = "SurfaceRenderer"
     }
 
+    @SuppressLint("SetJavaScriptEnabled")
     fun initialize(videoId: String) {
         if (isInitialized) {
             loadVideo(videoId)
@@ -32,71 +34,66 @@ class SurfaceRenderer(
         }
         pendingVideoId = videoId
 
-        youTubePlayerView = YouTubePlayerView(parentView.context).apply {
-            val params = ViewGroup.LayoutParams(
+        val wv = WebView(parentView.context).apply {
+            layoutParams = ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT
             )
-            parentView.addView(this, params)
+            settings.javaScriptEnabled = true
+            settings.mediaPlaybackRequiresUserGesture = false
+            settings.domStorageEnabled = true
+            webChromeClient = WebChromeClient()
+            webViewClient = WebViewClient()
         }
-
-        try {
-            lifecycleOwner.lifecycle.addObserver(youTubePlayerView!!)
-        } catch (e: Exception) {
-            Log.w(TAG, "No se pudo registrar lifecycle observer: ${e.message}")
+        parentView.addView(wv)
+        webView = wv
+        isInitialized = true
+        pendingVideoId?.let {
+            loadVideo(it)
+            pendingVideoId = null
         }
-
-        youTubePlayerView?.addYouTubePlayerListener(object : AbstractYouTubeListener() {
-            override fun onReady(player: YouTubePlayer) {
-                youTubePlayer = player
-                isInitialized = true
-                pendingVideoId?.let {
-                    player.loadVideo(it, 0f)
-                    pendingVideoId = null
-                }
-            }
-
-            override fun onError(player: YouTubePlayer, error: com.pierfrancescosironi.youtubeplayer.PlayerError) {
-                Log.e(TAG, "YouTube error: $error")
-            }
-        })
     }
 
     fun loadVideo(videoId: String, startTime: Float = 0f) {
-        if (isInitialized) {
-            youTubePlayer?.loadVideo(videoId, startTime)
-        } else {
-            pendingVideoId = videoId
+        val wv = webView ?: run { pendingVideoId = videoId; return }
+        val start = startTime.toInt()
+        val html = "<html><head><style>html,body{margin:0;padding:0;background:black;height:100%}</style></head>" +
+            "<body><iframe width=\"100%\" height=\"100%\" " +
+            "src=\"https://www.youtube.com/embed/" + videoId + "?autoplay=1&rel=0&start=" + start + "\" " +
+            "frameborder=\"0\" allow=\"autoplay; encrypted-media; fullscreen\" allowfullscreen></iframe></body></html>"
+        try {
+            wv.loadDataWithBaseURL("https://www.youtube.com", html, "text/html", "utf-8", null)
+        } catch (e: Exception) {
+            Log.e(TAG, "loadVideo fallo: ${e.message}")
         }
     }
 
     fun pause() {
-        try { youTubePlayer?.pause() } catch (e: Exception) { Log.w(TAG, e.message ?: "pause fail") }
+        try { webView?.onPause() } catch (e: Exception) { Log.w(TAG, e.message ?: "pause fail") }
     }
 
     fun resume() {
-        try { youTubePlayer?.play() } catch (e: Exception) { Log.w(TAG, e.message ?: "resume fail") }
+        try { webView?.onResume() } catch (e: Exception) { Log.w(TAG, e.message ?: "resume fail") }
     }
 
     fun stop() {
-        try { youTubePlayer?.pause() } catch (e: Exception) { /* ignore */ }
+        try { webView?.loadUrl("about:blank") } catch (e: Exception) { /* ignore */ }
     }
 
     fun release() {
         try {
-            youTubePlayer?.pause()
-            youTubePlayerView?.removeAllListeners()
-            youTubePlayerView?.let { parentView.removeView(it) }
+            webView?.let {
+                parentView.removeView(it)
+                it.destroy()
+            }
         } catch (e: Exception) {
             Log.w(TAG, e.message ?: "release fail")
         } finally {
-            youTubePlayerView = null
-            youTubePlayer = null
+            webView = null
             isInitialized = false
             pendingVideoId = null
         }
     }
 
-    fun getView(): View? = youTubePlayerView
+    fun getView(): View? = webView
 }
-

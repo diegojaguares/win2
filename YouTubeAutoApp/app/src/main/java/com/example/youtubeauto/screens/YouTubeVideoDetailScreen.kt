@@ -1,4 +1,4 @@
-﻿package com.example.youtubeauto.screens
+package com.example.youtubeauto.screens
 
 import android.content.Intent
 import androidx.car.app.CarContext
@@ -9,6 +9,7 @@ import androidx.car.app.model.Pane
 import androidx.car.app.model.PaneTemplate
 import androidx.car.app.model.Row
 import androidx.car.app.model.Template
+import android.util.Log
 import androidx.core.graphics.drawable.IconCompat
 import com.example.youtubeauto.R
 import com.example.youtubeauto.VideoProjectionActivity
@@ -43,7 +44,8 @@ class YouTubeVideoDetailScreen(
         carContext.startActivity(intent)
     }
 
-    override fun getTemplate(): Template {
+    override fun onGetTemplate(): Template {
+        Log.d("YouTubeCarSvc", "Detail onGetTemplate")
         val row = Row.Builder()
             .setTitle(video.title)
             .addText(video.channelName)

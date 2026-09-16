@@ -1,4 +1,4 @@
-﻿package com.example.youtubeauto.screens
+package com.example.youtubeauto.screens
 
 import androidx.car.app.CarContext
 import androidx.car.app.Screen
@@ -9,6 +9,7 @@ import androidx.car.app.model.GridItem
 import androidx.car.app.model.GridTemplate
 import androidx.car.app.model.ItemList
 import androidx.car.app.model.Template
+import android.util.Log
 import androidx.core.graphics.drawable.IconCompat
 import com.example.youtubeauto.R
 import com.example.youtubeauto.repository.YouTubeRepository
@@ -31,7 +32,8 @@ class YouTubeHomeScreen(carContext: CarContext) : Screen(carContext) {
         }
     }
 
-    override fun getTemplate(): Template {
+    override fun onGetTemplate(): Template {
+        Log.d("YouTubeCarSvc", "Home onGetTemplate")
         val itemListBuilder = ItemList.Builder()
 
         repository.getAll().forEach { video ->

@@ -1,4 +1,4 @@
-﻿package com.example.youtubeauto
+package com.example.youtubeauto
 
 import android.content.Intent
 import android.os.Bundle

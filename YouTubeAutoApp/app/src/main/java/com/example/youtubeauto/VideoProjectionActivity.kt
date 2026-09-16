@@ -1,4 +1,4 @@
-﻿package com.example.youtubeauto
+package com.example.youtubeauto
 
 import android.os.Bundle
 import android.view.WindowManager
