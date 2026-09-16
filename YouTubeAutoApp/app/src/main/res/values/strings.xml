@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">YouTube Auto</string>
+    <string name="youtube_title">YouTube</string>
+    <string name="video_title">Reproductor de Video</string>
+    <string name="search_hint">Buscar video...</string>
+    <string name="loading">Cargando...</string>
+    <string name="error_message">Error al cargar el video</string>
+    <string name="play_video">Reproducir</string>
+    <string name="stop_video">Detener</string>
+</resources>

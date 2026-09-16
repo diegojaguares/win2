@@ -1,0 +1,48 @@
+```
+# Android build artifacts
+*.apk
+*.aar
+*.dex
+*.so
+
+# Android dependency directories
+.gradle/
+build/
+app/build/
+
+# Android IDE files
+.idea/
+*.iml
+*.iws
+
+# Android cache
+.cache/
+
+# General Java/Kotlin compiled files
+*.class
+*.jar
+*.war
+*.ear
+
+# Gradle wrapper (keep the properties file but ignore other gradle files)
+!gradle/wrapper/gradle-wrapper.properties
+.gradle/
+
+# Local configuration file (sdk path, etc)
+local.properties
+
+# Log files
+*.log
+
+# Android Studio Navigation editor temp files
+.NavigationEditor/
+
+# Android Coverage
+*.ec
+
+# Project backup
+*/backup/
+
+# Ignore all .env files
+.env*
+```

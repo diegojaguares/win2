@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@color/background_dark"
+    android:padding="32dp">
+
+    <ImageView
+        android:layout_width="120dp"
+        android:layout_height="120dp"
+        android:src="@drawable/ic_youtube_logo"
+        android:contentDescription="YouTube Logo" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="YouTube Auto"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:layout_marginTop="24dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Esta aplicación está diseñada para funcionar con Android Auto.\n\nConecta tu dispositivo a un sistema compatible con Android Auto o usa el simulador de Desktop Head Unit para probar la funcionalidad completa.\n\nADVERTENCIA: La reproducción de video está bloqueada mientras el vehículo está en movimiento por razones de seguridad."
+        android:textSize="14sp"
+        android:textColor="@color/white"
+        android:gravity="center"
+        android:layout_marginTop="32dp"
+        android:lineSpacingExtra="4dp" />
+
+</LinearLayout>
