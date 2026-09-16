@@ -4,6 +4,7 @@
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK" />
 
     <uses-feature android:name="android.hardware.type.automotive" android:required="false" />
 
@@ -21,15 +22,14 @@
             android:resource="@xml/automotive_app_desc" />
 
         <service
-            android:name=".YouTubeCarAppService"
+            android:name=".media.YouTubeMediaService"
             android:exported="true">
             <intent-filter>
-                <action android:name="androidx.car.app.CarAppService" />
-                <category android:name="androidx.car.app.category.NAVIGATION" />
+                <action android:name="android.media.browse.MediaBrowserService" />
             </intent-filter>
         </service>
 
-        <!-- Con LAUNCHER: aparece en telefono y en el launcher del auto (este launcher solo lista activities). Los templates del CarAppService quedan para head-units reales/DHU. -->
+        <!-- Con LAUNCHER: aparece en telefono y en el auto. Servicio de medios para Android Auto (fuentes de Medios). -->
         <activity
             android:name=".MainActivity"
             android:exported="true"
