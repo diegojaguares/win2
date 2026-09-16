@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">YouTube SDL</string>
+    <string name="status_idle">Toca Conectar y luego conecta el carro por USB.</string>
+    <string name="connect">Conectar al carro</string>
+    <string name="disconnect">Desconectar</string>
+    <style name="Theme.Sdl" parent="Theme.AppCompat.Light.DarkActionBar" />
+</resources>
