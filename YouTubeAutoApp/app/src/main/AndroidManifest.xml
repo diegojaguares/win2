@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Permisos necesarios -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
+    
+    <!-- Características de Android Auto -->
+    <uses-feature android:name="android.hardware.type.automotive" android:required="false" />
+    
+    <application
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/Theme.YouTubeAutoApp"
+        tools:targetApi="34">
+
+        <!-- Servicio principal de Android Auto -->
+        <meta-data
+            android:name="com.google.android.gms.car.application"
+            android:resource="@xml/automotive_app_desc" />
+
+        <!-- Declaración del CarAppService -->
+        <service
+            android:name=".YouTubeCarAppService"
+            android:exported="true"
+            android:foregroundServiceType="mediaPlayback">
+            <intent-filter>
+                <action android:name="androidx.car.app.CarAppService" />
+            </intent-filter>
+        </service>
+
+        <!-- Actividad principal para modo standalone -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="true"
+            android:theme="@style/Theme.YouTubeAutoApp">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Actividad para proyección de video (estilo Fermata) -->
+        <activity
+            android:name=".VideoProjectionActivity"
+            android:exported="true"
+            android:theme="@style/Theme.YouTubeAutoApp.Projection"
+            android:configChanges="orientation|screenSize|keyboardHidden" />
+
+    </application>
+
+</manifest>
