@@ -8,7 +8,9 @@ $YtDlpUrl = "https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp.ex
 $OutDir = "$env:USERPROFILE\VideosCarro"
 
 $Videos = @(
-    "https://www.youtube.com/watch?v=M7FIvfx5J10",  # Epic Split (verificado OK)`n    # Agrega aqui tus enlaces (los en vivo no se pueden descargar):`n    # "https://www.youtube.com/watch?v=VIDEO_ID",
+    "https://www.youtube.com/watch?v=M7FIvfx5J10",  # Epic Split (verificado OK)
+    # Agrega aqui tus enlaces (los en vivo no se pueden descargar):
+    # "https://www.youtube.com/watch?v=VIDEO_ID",
     # (DWcJFNfaw9c no disponible)
     # (tGBRkQvf8B8 no disponible)
     # (jfKfPfyJRdk es en vivo: no descargable)
