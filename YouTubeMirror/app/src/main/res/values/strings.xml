@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">YouTube Mirror</string>
+    <string name="prev">Anterior</string>
+    <string name="next">Siguiente</string>
+    <string name="close">Cerrar</string>
+    <style name="Theme.Mirror" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowBackground">@android:color/black</item>
+    </style>
+</resources>
