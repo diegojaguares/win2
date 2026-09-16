@@ -3,6 +3,8 @@ package com.example.youtubeauto.media
 import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.support.v4.media.MediaBrowserCompat.MediaItem
 import android.support.v4.media.MediaDescriptionCompat
 import android.support.v4.media.MediaMetadataCompat
@@ -14,12 +16,14 @@ import com.example.youtubeauto.VideoProjectionActivity
 import com.example.youtubeauto.model.YouTubeVideo
 
 /**
- * Servicio de medios para Android Auto (fuentes de Medios).
- * Al dar play abre el video en el telefono y publica estado al carro.
+ * Medios para Android Auto + espejo de caratulas en vivo en la pantalla del carro.
  */
 class YouTubeMediaService : MediaBrowserServiceCompat() {
 
     private lateinit var session: MediaSessionCompat
+    private val artHandler = Handler(Looper.getMainLooper())
+    private var artIndex = 0
+    private var cycling = false
 
     companion object {
         const val ROOT_ID = "root"
@@ -31,12 +35,39 @@ class YouTubeMediaService : MediaBrowserServiceCompat() {
         session = MediaSessionCompat(this, TAG)
         sessionToken = session.sessionToken
         session.setFlags(
-            MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS or
-                MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
+            MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS or MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS
         )
         session.setCallback(SessionCallback())
         session.isActive = true
         Log.d(TAG, "service created")
+    }
+
+    private val artRunnable = object : Runnable {
+        override fun run() {
+            if (!cycling) return
+            val videos = YouTubeVideo.samples()
+            val v = videos[artIndex % videos.size]
+            artIndex++
+            val art = MediaMetadataCompat.Builder()
+                .putString(MediaMetadataCompat.METADATA_KEY_MEDIA_ID, v.id)
+                .putString(MediaMetadataCompat.METADATA_KEY_TITLE, v.title)
+                .putString(MediaMetadataCompat.METADATA_KEY_ARTIST, v.channelName)
+                .putString(MediaMetadataCompat.METADATA_KEY_ALBUM_ART_URI, v.thumbnailUrl)
+                .build()
+            session.setMetadata(art)
+            artHandler.postDelayed(this, 4000)
+        }
+    }
+
+    private fun startArtCycle() {
+        if (cycling) return
+        cycling = true
+        artHandler.post(artRunnable)
+    }
+
+    private fun stopArtCycle() {
+        cycling = false
+        artHandler.removeCallbacks(artRunnable)
     }
 
     override fun onGetRoot(
@@ -66,8 +97,7 @@ class YouTubeMediaService : MediaBrowserServiceCompat() {
     private inner class SessionCallback : MediaSessionCompat.Callback() {
         override fun onPlayFromMediaId(mediaId: String?, extras: Bundle?) {
             val video = YouTubeVideo.samples().firstOrNull { it.id == mediaId }
-                ?: YouTubeVideo.samples().first()
-            playVideo(video)
+            if (video != null) { playVideo(video) } else { playVideo(YouTubeVideo.samples().first()) }
         }
 
         override fun onPlay() {
@@ -75,6 +105,7 @@ class YouTubeMediaService : MediaBrowserServiceCompat() {
         }
 
         override fun onPause() {
+            stopArtCycle()
             session.setPlaybackState(
                 PlaybackStateCompat.Builder()
                     .setState(PlaybackStateCompat.STATE_PAUSED, 0, 1.0f)
@@ -84,6 +115,7 @@ class YouTubeMediaService : MediaBrowserServiceCompat() {
         }
 
         override fun onStop() {
+            stopArtCycle()
             session.setPlaybackState(
                 PlaybackStateCompat.Builder()
                     .setState(PlaybackStateCompat.STATE_STOPPED, 0, 1.0f)
@@ -103,25 +135,21 @@ class YouTubeMediaService : MediaBrowserServiceCompat() {
             session.setPlaybackState(
                 PlaybackStateCompat.Builder()
                     .setState(PlaybackStateCompat.STATE_PLAYING, 0, 1.0f)
-                    .setActions(
-                        PlaybackStateCompat.ACTION_PAUSE or
-                            PlaybackStateCompat.ACTION_STOP or
-                            PlaybackStateCompat.ACTION_SKIP_TO_NEXT or
-                            PlaybackStateCompat.ACTION_SKIP_TO_PREVIOUS
-                    )
+                    .setActions(PlaybackStateCompat.ACTION_PAUSE or PlaybackStateCompat.ACTION_STOP)
                     .build()
             )
-            val intent = Intent(this@YouTubeMediaService, VideoProjectionActivity::class.java).apply {
-                putExtra(VideoProjectionActivity.EXTRA_VIDEO_ID, video.id)
-                putExtra(VideoProjectionActivity.EXTRA_VIDEO_TITLE, video.title)
-                addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-            }
+            val intent = Intent(this@YouTubeMediaService, VideoProjectionActivity::class.java)
+            intent.putExtra(VideoProjectionActivity.EXTRA_VIDEO_ID, video.id)
+            intent.putExtra(VideoProjectionActivity.EXTRA_VIDEO_TITLE, video.title)
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
             startActivity(intent)
-            Log.d(TAG, "play: " + video.id)
+            startArtCycle()
+            Log.d(TAG, "play video")
         }
     }
 
     override fun onDestroy() {
+        stopArtCycle()
         session.isActive = false
         session.release()
         super.onDestroy()
