@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Instalador YouTube Auto</string>
+    <string name="install_mirror_btn">Instalar YouTube Mirror (para espejo)</string>
     <string name="install_btn">Instalar YouTube Auto en Android Auto</string>
     <string name="status_ready">Listo para instalar.</string>
     <string name="status_copying">Copiando APK...</string>

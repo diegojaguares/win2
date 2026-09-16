@@ -1,7 +1,6 @@
 package com.example.youtubeinstaller
 
 import android.content.Intent
-import android.content.pm.PackageInstaller // (sin uso directo)
 import android.net.Uri
 import android.os.Bundle
 import android.widget.Button
@@ -11,13 +10,14 @@ import androidx.core.content.FileProvider
 import java.io.File
 
 /**
- * Instalador estilo AAAD: instala YouTube Auto declarando
- * com.android.vending como instalador para que Android Auto lo muestre.
+ * Instalador estilo AAAD: instala las apps declarando
+ * com.android.vending como instalador para que Android Auto las muestre.
  */
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        const val ASSET_APK = "YouTubeAuto-v1.2-debug.apk"
+        const val ASSET_AUTO = "YouTubeAuto-v1.2-debug.apk"
+        const val ASSET_MIRROR = "YouTubeMirror-v1.0.apk"
         const val SPOOFED_INSTALLER = "com.android.vending"
     }
 
@@ -27,14 +27,15 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         status = findViewById(R.id.statusText)
-        findViewById<Button>(R.id.installButton).setOnClickListener { installApp() }
+        findViewById<Button>(R.id.installButton).setOnClickListener { installApp(ASSET_AUTO) }
+        findViewById<Button>(R.id.installMirrorButton).setOnClickListener { installApp(ASSET_MIRROR) }
     }
 
-    private fun installApp() {
+    private fun installApp(assetName: String) {
         try {
             status.setText(R.string.status_copying)
-            val outFile = File(cacheDir, ASSET_APK)
-            assets.open(ASSET_APK).use { input ->
+            val outFile = File(cacheDir, assetName)
+            assets.open(assetName).use { input ->
                 outFile.outputStream().use { output -> input.copyTo(output) }
             }
             val uri: Uri = FileProvider.getUriForFile(
