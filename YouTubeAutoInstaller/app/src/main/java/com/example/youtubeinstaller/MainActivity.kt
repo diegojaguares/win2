@@ -16,7 +16,7 @@ import java.io.File
 class MainActivity : AppCompatActivity() {
 
     companion object {
-        const val ASSET_AUTO = "YouTubeAuto-v1.2-debug.apk"
+        const val ASSET_AUTO = "YouTubeAuto-v1.3-debug.apk"
         const val ASSET_MIRROR = "YouTubeMirror-v1.0.apk"
         const val SPOOFED_INSTALLER = "com.android.vending"
     }

@@ -29,6 +29,15 @@
             </intent-filter>
         </service>
 
+        <service
+            android:name=".YouTubeCarAppService"
+            android:exported="true">
+            <intent-filter>
+                <action android:name="androidx.car.app.CarAppService" />
+                <category android:name="androidx.car.app.category.NAVIGATION" />
+            </intent-filter>
+        </service>
+
         <!-- Con LAUNCHER: aparece en telefono y en el auto. Servicio de medios para Android Auto (fuentes de Medios). -->
         <activity
             android:name=".MainActivity"
