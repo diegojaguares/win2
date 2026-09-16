@@ -18,6 +18,7 @@ class MainActivity : AppCompatActivity() {
     companion object {
         const val ASSET_AUTO = "YouTubeAuto-v1.4-debug.apk"
         const val ASSET_MIRROR = "YouTubeMirror-v1.0.apk"
+        const val ASSET_SDL = "YouTubeSdl-v1.0.apk"
         const val SPOOFED_INSTALLER = "com.android.vending"
     }
 
@@ -29,6 +30,7 @@ class MainActivity : AppCompatActivity() {
         status = findViewById(R.id.statusText)
         findViewById<Button>(R.id.installButton).setOnClickListener { installApp(ASSET_AUTO) }
         findViewById<Button>(R.id.installMirrorButton).setOnClickListener { installApp(ASSET_MIRROR) }
+        findViewById<Button>(R.id.installSdlButton).setOnClickListener { installApp(ASSET_SDL) }
     }
 
     private fun installApp(assetName: String) {
@@ -57,3 +59,4 @@ class MainActivity : AppCompatActivity() {
         }
     }
 }
+
