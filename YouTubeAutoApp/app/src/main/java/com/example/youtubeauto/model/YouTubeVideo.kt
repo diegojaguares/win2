@@ -1,7 +1,4 @@
-package com.example.youtubeauto.model
-
-import androidx.car.app.annotations.NonNull
-import com.pierfrancescosironi.youtubeplayer.YouTubePlayerListener
+﻿package com.example.youtubeauto.model
 
 /**
  * Modelo de datos para un video de YouTube
@@ -14,7 +11,7 @@ data class YouTubeVideo(
     val duration: String = ""
 ) {
     companion object {
-        fun fromVideoId(videoId: String, title: String = "Video sin título"): YouTubeVideo {
+        fun fromVideoId(videoId: String, title: String = "Video sin titulo"): YouTubeVideo {
             return YouTubeVideo(
                 id = videoId,
                 title = title,
@@ -22,21 +19,14 @@ data class YouTubeVideo(
                 thumbnailUrl = "https://img.youtube.com/vi/$videoId/maxresdefault.jpg"
             )
         }
+
+        fun samples(): List<YouTubeVideo> = listOf(
+            fromVideoId("jfKfPfyJRdk", "lofi hip hop radio"),
+            fromVideoId("5qap5aO4i9A", "lofi radio"),
+            fromVideoId("M7FIvfx5J10", "Music for Programming"),
+            fromVideoId("DWcJFNfaw9c", "Ambient Relaxation"),
+            fromVideoId("tGBRkQvf8B8", "Chill Music")
+        )
     }
 }
 
-/**
- * Listener simplificado para el reproductor de YouTube
- */
-interface SimpleYouTubeListener : YouTubePlayerListener {
-    override fun onReady(youTubePlayer: com.pierfrancescosironi.youtubeplayer.YouTubePlayer) {
-        // Implementación por defecto vacía
-    }
-
-    override fun onStateChange(
-        youTubePlayer: com.pierfrancescosironi.youtubeplayer.YouTubePlayer,
-        state: com.pierfrancescosironi.youtubeplayer.PlayerState
-    ) {
-        // Implementación por defecto vacía
-    }
-}

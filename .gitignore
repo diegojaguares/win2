@@ -1,5 +1,4 @@
-```
-# Android build artifacts
+﻿# Android build artifacts
 *.apk
 *.aar
 *.dex
@@ -35,6 +34,7 @@ local.properties
 *.log
 
 # Android Studio Navigation editor temp files
+.Navigation/
 .NavigationEditor/
 
 # Android Coverage
@@ -45,4 +45,4 @@ local.properties
 
 # Ignore all .env files
 .env*
-```
+

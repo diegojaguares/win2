@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -25,11 +25,19 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Esta aplicación está diseñada para funcionar con Android Auto.\n\nConecta tu dispositivo a un sistema compatible con Android Auto o usa el simulador de Desktop Head Unit para probar la funcionalidad completa.\n\nADVERTENCIA: La reproducción de video está bloqueada mientras el vehículo está en movimiento por razones de seguridad."
+        android:text="Esta aplicacion funciona con Android Auto.\n\nConecta a un sistema compatible o usa el Desktop Head Unit.\n\nADVERTENCIA: video bloqueado en movimiento."
         android:textSize="14sp"
         android:textColor="@color/white"
         android:gravity="center"
-        android:layout_marginTop="32dp"
+        android:layout_marginTop="24dp"
         android:lineSpacingExtra="4dp" />
 
+    <Button
+        android:id="@+id/btnPlaySample"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Probar video en telefono" />
+
 </LinearLayout>
+

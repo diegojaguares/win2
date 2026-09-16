@@ -1,63 +1,56 @@
-package com.example.youtubeauto.screens
+﻿package com.example.youtubeauto.screens
 
-import android.util.Log
 import androidx.car.app.CarContext
 import androidx.car.app.Screen
-import androidx.car.app.model.*
+import androidx.car.app.model.Action
+import androidx.car.app.model.CarColor
+import androidx.car.app.model.CarIcon
+import androidx.car.app.model.GridItem
+import androidx.car.app.model.GridTemplate
+import androidx.car.app.model.ItemList
+import androidx.car.app.model.Template
+import androidx.core.graphics.drawable.IconCompat
 import com.example.youtubeauto.R
-import com.example.youtubeauto.VideoProjectionActivity
-import com.example.youtubeauto.model.YouTubeVideo
+import com.example.youtubeauto.repository.YouTubeRepository
 
 /**
  * Pantalla principal de YouTube para Android Auto
- * Muestra una lista de videos sugeridos y permite seleccionar uno para reproducir
+ * Muestra grid de videos sugeridos. Click -> Detail.
  */
 class YouTubeHomeScreen(carContext: CarContext) : Screen(carContext) {
 
-    companion object {
-        private const val TAG = "YouTubeHomeScreen"
-        
-        // Lista de videos de ejemplo para demostración
-        val SAMPLE_VIDEOS = listOf(
-            YouTubeVideo.fromVideoId("jfKfPfyJRdk", "lofi hip hop radio"),
-            YouTubeVideo.fromVideoId("5qap5aO4i9A", "lofi radio"),
-            YouTubeVideo.fromVideoId("M7FIvfx5J10", "Music for Programming"),
-            YouTubeVideo.fromVideoId("DWcJFNfaw9c", "Ambient Relaxation"),
-            YouTubeVideo.fromVideoId("tGBRkQvf8B8", "Chill Music")
-        )
+    private val repository = YouTubeRepository()
+
+    private fun appIcon(): CarIcon {
+        return try {
+            CarIcon.Builder(
+                IconCompat.createWithResource(carContext, R.drawable.ic_youtube_logo)
+            ).build()
+        } catch (e: Exception) {
+            CarIcon.APP_ICON
+        }
     }
 
     override fun getTemplate(): Template {
-        return GridTemplate.Builder().apply {
-            setTitle(carContext.getString(R.string.youtube_title))
-            setHeaderAction(Action.APP_ICON)
-            
-            // Agregar items de video en formato grid
-            val itemList = ItemList.Builder()
-            
-            SAMPLE_VIDEOS.forEach { video ->
-                val gridItem = GridItem.Builder().apply {
-                    setImage(
-                        ImageMetadata.Builder()
-                            .setUri(video.thumbnailUrl)
-                            .build()
-                    )
-                    setTitle(video.title)
-                    setText(video.channelName)
-                    setOnClickListener {
-                        // Al hacer clic, lanzar la actividad de reproducción de video
-                        val intent = carContext.intentBuilder(VideoProjectionActivity::class.java)
-                            .putExtra("VIDEO_ID", video.id)
-                            .putExtra("VIDEO_TITLE", video.title)
-                            .build()
-                        carContext.startActivity(intent)
-                    }
-                    build()
+        val itemListBuilder = ItemList.Builder()
+
+        repository.getAll().forEach { video ->
+            val gridItem = GridItem.Builder()
+                .setTitle(video.title)
+                .setText(video.channelName)
+                .setImage(appIcon())
+                .setOnClickListener {
+                    screenManager.push(YouTubeVideoDetailScreen(carContext, video))
                 }
-                itemList.addItem(gridItem.build())
-            }
-            
-            setSingleList(itemList.build())
-        }.build()
+                .build()
+            itemListBuilder.addItem(gridItem)
+        }
+
+        return GridTemplate.Builder()
+            .setTitle(carContext.getString(R.string.youtube_title))
+            .setHeaderAction(Action.APP_ICON)
+            .setSingleList(itemListBuilder.build())
+            .build()
     }
 }
+

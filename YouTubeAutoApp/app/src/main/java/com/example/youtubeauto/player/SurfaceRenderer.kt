@@ -1,5 +1,6 @@
-package com.example.youtubeauto.player
+﻿package com.example.youtubeauto.player
 
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import androidx.lifecycle.LifecycleOwner
@@ -9,7 +10,7 @@ import com.pierfrancescosironi.youtubeplayer.listener.AbstractYouTubeListener
 
 /**
  * Renderizador de superficie para video de YouTube
- * Inspirado en la implementación de Fermata Auto
+ * Inspirado en Fermata Auto
  */
 class SurfaceRenderer(
     private val parentView: ViewGroup,
@@ -18,76 +19,84 @@ class SurfaceRenderer(
     private var youTubePlayerView: YouTubePlayerView? = null
     private var youTubePlayer: YouTubePlayer? = null
     private var isInitialized = false
+    private var pendingVideoId: String? = null
 
-    /**
-     * Inicializa el reproductor de YouTube
-     */
+    companion object {
+        private const val TAG = "SurfaceRenderer"
+    }
+
     fun initialize(videoId: String) {
-        if (isInitialized) return
+        if (isInitialized) {
+            loadVideo(videoId)
+            return
+        }
+        pendingVideoId = videoId
 
-        youTubePlayerView = YouTubePlayerView(parentView.context)
-        
-        val params = ViewGroup.LayoutParams(
-            ViewGroup.LayoutParams.MATCH_PARENT,
-            ViewGroup.LayoutParams.MATCH_PARENT
-        )
-        
-        parentView.addView(youTubePlayerView, params)
+        youTubePlayerView = YouTubePlayerView(parentView.context).apply {
+            val params = ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT
+            )
+            parentView.addView(this, params)
+        }
+
+        try {
+            lifecycleOwner.lifecycle.addObserver(youTubePlayerView!!)
+        } catch (e: Exception) {
+            Log.w(TAG, "No se pudo registrar lifecycle observer: ${e.message}")
+        }
 
         youTubePlayerView?.addYouTubePlayerListener(object : AbstractYouTubeListener() {
-            override fun onReady(youTubePlayer: YouTubePlayer) {
-                this@SurfaceRenderer.youTubePlayer = youTubePlayer
+            override fun onReady(player: YouTubePlayer) {
+                youTubePlayer = player
                 isInitialized = true
-                youTubePlayer.loadVideo(videoId, 0f)
+                pendingVideoId?.let {
+                    player.loadVideo(it, 0f)
+                    pendingVideoId = null
+                }
             }
 
-            override fun onError(youTubePlayer: YouTubePlayer, error: com.pierfrancescosironi.youtubeplayer.PlayerError) {
-                // Manejo de errores
+            override fun onError(player: YouTubePlayer, error: com.pierfrancescosironi.youtubeplayer.PlayerError) {
+                Log.e(TAG, "YouTube error: $error")
             }
         })
     }
 
-    /**
-     * Carga un video específico
-     */
     fun loadVideo(videoId: String, startTime: Float = 0f) {
-        youTubePlayer?.loadVideo(videoId, startTime)
+        if (isInitialized) {
+            youTubePlayer?.loadVideo(videoId, startTime)
+        } else {
+            pendingVideoId = videoId
+        }
     }
 
-    /**
-     * Pausa la reproducción
-     */
     fun pause() {
-        youTubePlayer?.pause()
+        try { youTubePlayer?.pause() } catch (e: Exception) { Log.w(TAG, e.message ?: "pause fail") }
     }
 
-    /**
-     * Reanuda la reproducción
-     */
     fun resume() {
-        youTubePlayer?.play()
+        try { youTubePlayer?.play() } catch (e: Exception) { Log.w(TAG, e.message ?: "resume fail") }
     }
 
-    /**
-     * Detiene la reproducción
-     */
     fun stop() {
-        youTubePlayer?.stopVideo()
+        try { youTubePlayer?.pause() } catch (e: Exception) { /* ignore */ }
     }
 
-    /**
-     * Libera los recursos del reproductor
-     */
     fun release() {
-        youTubePlayerView?.removeAllListeners()
-        youTubePlayerView?.let { parentView.removeView(it) }
-        youTubePlayerView = null
-        youTubePlayer = null
-        isInitialized = false
+        try {
+            youTubePlayer?.pause()
+            youTubePlayerView?.removeAllListeners()
+            youTubePlayerView?.let { parentView.removeView(it) }
+        } catch (e: Exception) {
+            Log.w(TAG, e.message ?: "release fail")
+        } finally {
+            youTubePlayerView = null
+            youTubePlayer = null
+            isInitialized = false
+            pendingVideoId = null
+        }
     }
 
-    /**
-     * Obtiene la vista del reproductor
-     */
     fun getView(): View? = youTubePlayerView
 }
+

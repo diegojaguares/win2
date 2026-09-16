@@ -1,13 +1,10 @@
-package com.example.youtubeauto
+﻿package com.example.youtubeauto
 
-import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
+import android.content.Intent
 import androidx.car.app.CarAppService
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
+import androidx.car.app.Screen
+import androidx.car.app.Session
 import com.example.youtubeauto.screens.YouTubeHomeScreen
-import kotlinx.coroutines.launch
 
 /**
  * Servicio principal de Android Auto
@@ -15,7 +12,7 @@ import kotlinx.coroutines.launch
  */
 class YouTubeCarAppService : CarAppService() {
 
-    override fun createCarAppSession(): Session {
+    override fun onCreateSession(): Session {
         return YouTubeSession()
     }
 
@@ -25,3 +22,4 @@ class YouTubeCarAppService : CarAppService() {
         }
     }
 }
+

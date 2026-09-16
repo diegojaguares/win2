@@ -1,18 +1,18 @@
-package com.example.youtubeauto
+﻿package com.example.youtubeauto
 
 import android.os.Bundle
 import android.view.WindowManager
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.youtubeauto.player.SurfaceRenderer
 import com.example.youtubeauto.databinding.ActivityVideoProjectionBinding
+import com.example.youtubeauto.player.SurfaceRenderer
 
 /**
- * Actividad de proyección de video
- * Inspirado en Fermata Auto - permite reproducción de video en pantalla completa
- * 
- * NOTA: Esta actividad está diseñada para fines educativos y de demostración.
- * Android Auto bloqueará la reproducción de video mientras el vehículo esté en movimiento
- * por razones de seguridad. Funciona solo cuando el vehículo está detenido o en simulador.
+ * Actividad de proyeccion de video
+ * Inspirado en Fermata Auto - permite reproduccion en pantalla completa
+ *
+ * NOTA: fines educativos. Android Auto bloquea video en movimiento.
+ * Funciona detenido o en simulador. En Auto real el video se ve en el telefono.
  */
 class VideoProjectionActivity : AppCompatActivity() {
 
@@ -27,27 +27,33 @@ class VideoProjectionActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
-        // Configurar pantalla completa y mantener pantalla encendida
+
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         window.addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN)
-        
+
         binding = ActivityVideoProjectionBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Obtener datos del intent
         currentVideoId = intent.getStringExtra(EXTRA_VIDEO_ID) ?: ""
         val videoTitle = intent.getStringExtra(EXTRA_VIDEO_TITLE) ?: "Video"
-        
-        // Mostrar título del video
+
         binding.videoTitle.text = videoTitle
 
-        // Inicializar renderizador de superficie
-        surfaceRenderer = SurfaceRenderer(binding.videoContainer, this)
-        
-        if (currentVideoId.isNotEmpty()) {
-            surfaceRenderer?.initialize(currentVideoId)
+        if (currentVideoId.isBlank()) {
+            Toast.makeText(this, getString(R.string.error_message), Toast.LENGTH_LONG).show()
+            finish()
+            return
         }
+
+        surfaceRenderer = SurfaceRenderer(binding.videoContainer, this)
+        surfaceRenderer?.initialize(currentVideoId)
+
+        onBackPressedDispatcher.addCallback(this, object : androidx.activity.OnBackPressedCallback(true) {
+            override fun handleOnBackPressed() {
+                surfaceRenderer?.stop()
+                finish()
+            }
+        })
     }
 
     override fun onPause() {
@@ -65,9 +71,5 @@ class VideoProjectionActivity : AppCompatActivity() {
         surfaceRenderer?.release()
         surfaceRenderer = null
     }
-
-    override fun onBackPressed() {
-        surfaceRenderer?.stop()
-        finish()
-    }
 }
+
